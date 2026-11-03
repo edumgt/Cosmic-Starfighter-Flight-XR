@@ -1,0 +1,6 @@
+{
+  "name": "Cosmic Core Defender XR",
+  "description": "An immersive 3D sci-fi defense game built with Three.js procedural craft, WebXR spatial interactions, and responsive synth audio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

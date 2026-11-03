@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cosmic Starfighter Flight XR</title>
+    <meta name="description" content="우주선 조종석에 앉아 양손으로 조종관을 잡고 다양한 행성 지형을 질주하는 3D WebXR 비행 시뮬레이션 게임." />
+    <meta property="og:title" content="Cosmic Starfighter Flight XR" />
+    <meta property="og:description" content="우주선 조종석에 앉아 양손으로 조종관을 잡고 다양한 행성 지형을 질주하는 3D WebXR 비행 시뮬레이션 게임." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Noto+Sans+KR:wght@400;600;700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/index.css" />
+  </head>
+  <body>
+    <div id="game-overlay">
+      <!-- Top Status Cluster -->
+      <div id="top-bar" class="hud-layer hidden">
+        <div class="stat-cluster">
+          <div class="stat-label">🛡️ 콕핏 쉴드 내구도</div>
+          <div class="bar-container">
+            <div id="core-hp-bar" class="bar-fill" style="width: 100%;"></div>
+          </div>
+          <div id="core-hp-text" class="stat-value tabular-nums">100%</div>
+        </div>
+
+        <div class="stat-cluster center-cluster">
+          <div class="wave-badge"><span id="wave-num">화성 붉은 협곡</span></div>
+          <div class="score-display">비행 거리: <span id="score-text" class="tabular-nums">0000</span> M</div>
+          <div id="combo-display" class="combo-text">링 통과: 0개</div>
+        </div>
+
+        <div class="stat-cluster right-cluster">
+          <div class="stat-label">⚡ 하이퍼 부스트</div>
+          <div class="bar-container emp-bar">
+            <div id="emp-meter-bar" class="bar-fill emp-fill" style="width: 100%;"></div>
+          </div>
+          <div id="emp-status-text" class="stat-value ready-text">부스트: 100%</div>
+        </div>
+      </div>
+
+      <!-- Quick Action Floating Dock (Bottom) -->
+      <div id="bottom-dock" class="hud-layer hidden">
+        <button id="btn-fire" class="action-btn fire-btn" title="트윈 캐논 발사 (클릭 / 스페이스바)">
+          <span class="btn-key">[클릭 / Space]</span> 💥 캐논 발사
+        </button>
+        <button id="btn-emp" class="action-btn emp-btn" title="하이퍼 부스트 가속 (키보드 1)">
+          <span class="btn-key">[1]</span> ⚡ 순간 가속
+        </button>
+        <button id="btn-shield" class="action-btn shield-btn" title="쉴드 긴급 수리 (키보드 2)">
+          <span class="btn-key">[2]</span> 🛡️ 쉴드 수리
+        </button>
+        <button id="btn-weapon" class="action-btn weapon-btn" title="부스트 가속 토글 (키보드 3 / Shift)">
+          <span class="btn-key">[3]</span> <span id="weapon-mode-text">순항 중 🛸</span>
+        </button>
+        <button id="btn-help" class="action-btn help-btn" title="비행 조작 가이드">
+          <span>📖 조작법</span>
+        </button>
+        <button id="btn-sound" class="action-btn icon-btn" title="사운드 켜기/끄기">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </div>
+
+      <!-- Control hints -->
+      <div id="control-hints" class="hud-layer hidden">
+        <span>🕹️ 마우스 / A,D: 조종관 회전 뱅킹</span>
+        <span>•</span>
+        <span>W,S: 상승/하강 피치</span>
+        <span>•</span>
+        <span>클릭/Space: 캐논 발사</span>
+        <span>•</span>
+        <span>⚡ 빛나는 링을 통과해 부스트를 충전하세요!</span>
+      </div>
+
+      <!-- Floating notification message -->
+      <div id="announcement-banner" class="announcement hidden">
+        <h2 id="announcement-title">🚀 조종간 비행 시작!</h2>
+        <p id="announcement-subtitle">협곡과 메가시티를 질주하며 링을 통과하세요</p>
+      </div>
+
+      <!-- Easy Tutorial / Start Modal (초간단 사용법 및 시작 팝업) -->
+      <div id="easy-guide-modal" class="modal-backdrop">
+        <div class="guide-card">
+          <div class="guide-header">
+            <span class="guide-tag">콕핏 비행 시뮬레이터</span>
+            <h2>🚀 스타파이터 콕핏 XR (우주선 비행)</h2>
+            <p>우주선 조종석에 앉아 양손으로 <b>조종관(Yoke)</b>을 잡고, 전방에 펼쳐지는 다양한 행성 지형을 질주하세요!</p>
+          </div>
+
+          <div class="guide-steps">
+            <div class="step-item">
+              <div class="step-icon">🕹️</div>
+              <div class="step-content">
+                <h3>1. 조종관(Yoke) 잡고 비행하기</h3>
+                <p>마우스나 키보드(<b>A, D</b>)로 조종관을 좌우로 기울여 선회(Roll)하고, <b>W, S</b>로 상승/하강(Pitch)합니다. (XR에서는 컨트롤러를 잡고 기울이세요!)</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-icon">💥</div>
+              <div class="step-content">
+                <h3>2. 트윈 플라즈마 캐논 발사</h3>
+                <p><b>마우스 좌클릭</b> 또는 <b>스페이스바</b>를 누르면 양 날개의 캐논에서 레이저가 발사되어 전방의 장애물 바위와 구조물을 파괴합니다.</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-icon">⚡</div>
+              <div class="step-content">
+                <h3>3. 비행 트레일 잔상 & 에너지 링 통과</h3>
+                <p>기체가 비행할 때 양 날개 끝에서 푸른 <b>빛의 궤적 리본(Trail Effect)</b>과 <b>워프 스피드라인</b>이 잔상으로 휘감아 돌아 속도감을 극대화합니다! 공중에 떠 있는 <b>에너지 링</b>을 통과하면 마젠타빛 초고속 하이퍼 부스트가 발동됩니다.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-controls-table">
+            <div class="ctrl-col">
+              <span class="ctrl-badge">PC 조작키</span>
+              <span>마우스 이동 / A,D(선회) · W,S(상하) · Space(발사) · [1] 부스트</span>
+            </div>
+            <div class="ctrl-col">
+              <span class="ctrl-badge">XR 헤드셋 조작</span>
+              <span>컨트롤러/손으로 조종관 잡고 기울이기 & 트리거 발사</span>
+            </div>
+          </div>
+
+          <div class="guide-actions">
+            <button id="btn-start-game" class="btn-primary-start">
+              ▶️ 조종석 탑승 & 비행 시작하기
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/index.ts"></script>
+  </body>
+</html>
