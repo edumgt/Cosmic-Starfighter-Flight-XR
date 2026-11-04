@@ -415,8 +415,8 @@ class SpaceshipFlightGame extends xb.Script {
       soundManager.updateEngineHum(this.throttle);
     }
 
-    // 2. Animate Spaceship Cockpit, Flight Yoke & Pilot Hands
-    this.cockpit.updateSteering(this.pitch, this.roll, this.throttle, time);
+    // 2. Animate Spaceship Cockpit, Flight Yoke & Pilot Hands with Realistic 3D Kinematics
+    this.cockpit.updateSteering(this.pitch, this.roll, this.throttle, time, dt, this.isBoosting);
 
     // Apply Bank and Pitch tilt to Cockpit to give authentic flying sensation
     this.cockpit.group.rotation.z = -this.roll * 0.35;
